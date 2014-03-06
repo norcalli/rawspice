@@ -13,14 +13,20 @@ import (
 	"time"
 )
 
+// Vector is the type for representing the data.
+// This will eventually be complex.
 type Vector []float64
 
+// PlotType is a flag that might be implemented to denote
+// which simulation was run.
 type PlotType int
 
 const (
 	plotUndefined PlotType = iota
 )
 
+// VectorType is a flag that might be implemented to denote
+// which type a vector is (current, voltage, time).
 type VectorType int
 
 const (
@@ -45,7 +51,7 @@ func NewVector(Name, Type string) *SpiceVector {
 	return vector
 }
 
-// Simple method to get the ith element of the data.
+// Get is a simple method to get the ith element of the data.
 func (s *SpiceVector) Get(i int64) float64 {
 	return s.Data[i]
 }
@@ -65,7 +71,7 @@ type SpicePlot struct {
 	// Dimensions []string
 	// ScaleVector *SpiceVector
 
-	DataVectors []*SpiceVector
+	Vectors []*SpiceVector
 	// TimeVector  *SpiceVector
 
 	Real   bool
@@ -154,7 +160,7 @@ func ReadFile(filename string) ([]*SpicePlot, error) {
 				line = strings.TrimSpace(line)
 				// scanner.Scan()
 				fields := strings.Fields(strings.TrimSpace(line))
-				plot.DataVectors = append(plot.DataVectors, NewVector(fields[1], fields[2]))
+				plot.Vectors = append(plot.Vectors, NewVector(fields[1], fields[2]))
 			}
 		case "binary":
 			// line, err = reader.ReadString('\n')
@@ -163,18 +169,19 @@ func ReadFile(filename string) ([]*SpicePlot, error) {
 			// scanner.Scan()
 			// bytes_buffer := scanner.Bytes()
 
-			data_size := int64(plot.NVariables * plot.NPoints)
-			buffer_size := data_size
-			if !plot.Real {
-				buffer_size *= 2
-			}
-			// bytes_buffer := make([]byte, buffer_size*8)
+			// dataSize := int64(plot.NVariables * plot.NPoints)
+			// bufferSize := dataSize
+			// if !plot.Real {
+			// 	bufferSize *= 2
+			// }
+
+			// bytes_buffer := make([]byte, bufferSize*8)
 
 			// io.ReadFull(reader, bytes_buffer)
 
-			// data_buffer := make([]float64, buffer_size)
-			// // binary.Read(io.LimitReader(file, buffer_size*8), binary.LittleEndian, &data_buffer)
-			// // binary.Read(io.LimitReader(file, buffer_size*8), binary.LittleEndian, &data_buffer)
+			// data_buffer := make([]float64, bufferSize)
+			// // binary.Read(io.LimitReader(file, bufferSize*8), binary.LittleEndian, &data_buffer)
+			// // binary.Read(io.LimitReader(file, bufferSize*8), binary.LittleEndian, &data_buffer)
 			// // binary.Read(file, binary.LittleEndian, &buffer)
 			// // file.Read(bytes_buffer)
 			// binary.Read(bytes.NewBuffer(bytes_buffer), binary.LittleEndian, &data_buffer)
@@ -188,13 +195,13 @@ func ReadFile(filename string) ([]*SpicePlot, error) {
 			// // binary.Read(bytes.NewBuffer(scanner.Bytes()), binary.LittleEndian, &buffer)
 
 			if plot.Real {
-				for _, v := range plot.DataVectors {
+				for _, v := range plot.Vectors {
 					v.Data = make(Vector, plot.NPoints)
 				}
 				for j := int64(0); j < plot.NPoints; j++ {
 					for i := int64(0); i < plot.NVariables; i++ {
 						// offset := j*plot.NVariables + i
-						binary.Read(reader, binary.LittleEndian, &plot.DataVectors[i].Data[j])
+						binary.Read(reader, binary.LittleEndian, &plot.Vectors[i].Get(j))
 					}
 				}
 			}
