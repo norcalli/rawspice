@@ -88,11 +88,16 @@ func minInt(a, b int) int {
 	return a
 }
 
-// ReadFile decodes the plots from the raw spice file given a filename.
-// - A plot is any simulation command output, .dc, .tf, etc...
-// - Currently doesn't support complex numbers.
-// - Interpretation is left to the user, as a .dc command will report
-// vectors with NPoints = 1.
+/*
+ ReadFile decodes the plots from the raw spice file given a filename.
+
+ - A plot is any simulation command output, .dc, .tf, etc...
+
+ - Currently doesn't support complex numbers.
+
+ - Interpretation is left to the user, as a .dc command will report
+ vectors with NPoints = 1.
+*/
 func ReadFile(filename string) ([]*SpicePlot, error) {
 	// file, err := os.OpenFile(filename, os.O_RDONLY, 0666)
 	file, err := os.Open(filename)
