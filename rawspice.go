@@ -30,10 +30,10 @@ const (
 type VectorType int
 
 const (
-	tUndefined VectorType = iota,
-		tCurrent,
-		tVoltage,
-		tTime
+	tUndefined VectorType = iota
+	tCurrent
+	tVoltage
+	tTime
 )
 
 // SpiceVector is the main type for containing the data.
@@ -206,7 +206,7 @@ func ReadFile(filename string) ([]*SpicePlot, error) {
 				for j := int64(0); j < plot.NPoints; j++ {
 					for i := int64(0); i < plot.NVariables; i++ {
 						// offset := j*plot.NVariables + i
-						binary.Read(reader, binary.LittleEndian, &plot.Vectors[i].Get(j))
+						binary.Read(reader, binary.LittleEndian, &plot.Vectors[i].Data[j])
 					}
 				}
 			}
